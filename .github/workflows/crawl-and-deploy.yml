@@ -1,0 +1,63 @@
+name: crawl-and-deploy
+
+on:
+  schedule:
+    - cron: "17 */3 * * *"
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: crawl
+  cancel-in-progress: false
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Unit tests
+        run: python -m unittest discover -s tests
+      - name: Restore database (price history)
+        uses: actions/cache/restore@v4
+        with:
+          path: data/outletradar_se.sqlite
+          key: outletradar-db-${{ github.run_id }}
+          restore-keys: outletradar-db-
+      - name: Crawl sources
+        env:
+          ADTRACTION_FEED_URL_1: ${{ secrets.ADTRACTION_FEED_URL_1 }}
+          PARTNERADS_FEED_URL_1: ${{ secrets.PARTNERADS_FEED_URL_1 }}
+          AWIN_FEED_URL_1: ${{ secrets.AWIN_FEED_URL_1 }}
+          ELGIGANTEN_FEED_URL: ${{ secrets.ELGIGANTEN_FEED_URL }}
+        run: |
+          for f in data/snapshots/*_se_*.py; do python "$f"; done
+          python -m outletradar --config data/sources/sources_se.json --db data/outletradar_se.sqlite --out public_se/data
+      - name: Save database
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: data/outletradar_se.sqlite
+          key: outletradar-db-${{ github.run_id }}
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public_se
+  deploy:
+    needs: crawl
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
