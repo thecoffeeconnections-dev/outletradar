@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import time
 import traceback
 from collections import Counter
 from pathlib import Path
@@ -66,6 +67,8 @@ def run(config_path: Path, db_path: Path, out_dir: Path, only: list[str] | None 
     store = Store(db_path)
     run_at = now_iso()
     summary = {}
+    t_start = time.monotonic()
+    total_budget = cfg_all.get("total_budget_s", 1800)
     for cfg in cfg_all["sources"]:
         if not cfg.get("enabled", True) or (only and cfg["id"] not in only):
             continue
@@ -73,8 +76,15 @@ def run(config_path: Path, db_path: Path, out_dir: Path, only: list[str] | None 
             continue
         adapter = REGISTRY[cfg["adapter"]](cfg, fetcher)
         fetched, kept, dropped, seen, err = 0, 0, Counter(), set(), None
+        partial = False
+        t_src = time.monotonic()
+        budget = cfg.get("time_budget_s", cfg_all.get("time_budget_s", 300))
         try:
             for rec in adapter.records():
+                now = time.monotonic()
+                if cfg["adapter"] != "manual_snapshot" and (now - t_src > budget or now - t_start > total_budget):
+                    partial = True  # time budget used: keep what we have, continue next run
+                    break
                 if "_error" in rec:
                     dropped["fetch_error"] += 1
                     err = rec["_error"]
@@ -97,11 +107,11 @@ def run(config_path: Path, db_path: Path, out_dir: Path, only: list[str] | None 
         except Exception as e:  # source down / layout changed: keep previous data, report it
             ok, err = False, f"{type(e).__name__}: {e}"
             traceback.print_exc(file=sys.stderr)
-        if ok and cfg["adapter"] != "manual_snapshot":
+        if ok and not partial and cfg["adapter"] != "manual_snapshot":
             store.mark_missing(cfg["id"], seen)
         store.log_run(cfg["id"], ok, fetched, kept, dict(dropped), err)
         summary[cfg["id"]] = {"ok": ok, "fetched": fetched, "kept": kept, "dropped": dict(dropped), "error": err}
-        print(f"[{cfg['id']}] ok={ok} fetched={fetched} kept={kept} dropped={dict(dropped)} {err or ''}")
+        print(f"[{cfg['id']}] ok={ok}{' partial' if partial else ''} fetched={fetched} kept={kept} dropped={dict(dropped)} {err or ''}")
     store.commit()
     export(store, out_dir, cfg_all, run_at)
     return summary
