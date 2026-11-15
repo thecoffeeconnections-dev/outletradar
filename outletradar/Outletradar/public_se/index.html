@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="sv" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OutletRadar · retur, demo och outlet i Sverige</title>
+<link rel="canonical" href="https://outletradar.se/">
+<meta property="og:title" content="OutletRadar">
+<meta property="og:url" content="https://outletradar.se/">
+<meta name="description" content="Returer, demoexemplar, öppnade förpackningar, outlet och rea från svenska butiker, samlat på ett ställe.">
+<meta name="theme-color" content="#f6f3ee">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<script>
+/* apply saved theme before paint to avoid a flash */
+try{var th=localStorage.getItem("frse_theme");if(th)document.documentElement.dataset.theme=JSON.parse(th);}catch(e){}
+</script>
+<style>
+:root{
+  --bg:#f6f3ee; --surface:#fbfaf7; --img:#efebe4; --ink:#22211f; --muted:#7a756d; --line:#e4dfd5;
+  --accent:#b2603f; --sage:#6f7f6a; --chip:#ece7de; --btn:#22211f; --btn-ink:#fbfaf7;
+  --radius:6px; --blend:multiply;
+  font-family:"DM Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --bg:#151514; --surface:#1c1c1a; --img:#e9e5de; --ink:#ecebe7; --muted:#9a958c; --line:#2d2c29;
+  --accent:#de8a6a; --sage:#9fb19a; --chip:#262523; --btn:#ecebe7; --btn-ink:#151514; color-scheme:dark;
+}
+@media (prefers-color-scheme:dark){
+  :root[data-theme="auto"]{
+    --bg:#151514; --surface:#1c1c1a; --img:#e9e5de; --ink:#ecebe7; --muted:#9a958c; --line:#2d2c29;
+    --accent:#de8a6a; --sage:#9fb19a; --chip:#262523; --btn:#ecebe7; --btn-ink:#151514; color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);transition:background .25s,color .25s}
+body{font-weight:400;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+button,input,select{font-family:inherit}
+.wrap{max-width:1240px;margin:0 auto;padding:0 20px}
+
+/* header */
+header.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:14px;height:60px}
+.logo{display:flex;align-items:center;gap:9px;text-decoration:none;font-weight:500;font-size:18px;letter-spacing:-.01em}
+.logo .mark{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--ink);position:relative}
+.logo .mark::after{content:"";position:absolute;width:6px;height:6px;border-radius:50%;background:var(--accent);top:50%;left:50%;transform:translate(-50%,-50%)}
+.logo .cc{font-size:11px;font-weight:500;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-left:2px}
+.spacer{flex:1}
+.seg{display:flex;border:1px solid var(--line);border-radius:999px;padding:2px}
+.seg button{border:0;background:transparent;color:var(--muted);font:500 12px/1 inherit;letter-spacing:.06em;padding:7px 10px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.seg svg{width:14px;height:14px;display:block}
+
+/* hero */
+.hero{padding:44px 0 18px}
+.eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:0 0 14px}
+.hero h1{font-weight:400;font-size:clamp(28px,4.6vw,50px);line-height:1.06;letter-spacing:-.025em;margin:0 0 12px;max-width:820px}
+.hero p{margin:0;color:var(--muted);max-width:620px;line-height:1.55;font-size:15.5px}
+
+/* controls */
+.searchrow{display:flex;gap:10px;margin:22px 0 14px}
+.search{flex:1;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--ink);padding:0 2px}
+.search svg{color:var(--muted)}
+.search input{flex:1;border:0;outline:0;background:transparent;color:var(--ink);font:400 17px/1 inherit;height:48px;min-width:0}
+.search input::placeholder{color:var(--muted)}
+.btn{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:0 16px;height:44px;font:500 13px/1 inherit;letter-spacing:.04em;cursor:pointer;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;transition:border-color .2s}
+.btn:hover{border-color:var(--ink)}
+.chips{display:flex;gap:4px;overflow-x:auto;padding:2px 0 14px;scrollbar-width:none;border-bottom:1px solid var(--line);margin-bottom:16px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:0;background:transparent;color:var(--muted);padding:9px 12px;font:400 14px/1 inherit;cursor:pointer;border-radius:999px;display:inline-flex;gap:6px;align-items:center}
+.chip .n{font-size:11px;opacity:.7}
+.chip:hover{color:var(--ink)}
+.chip[aria-pressed=true]{background:var(--chip);color:var(--ink);font-weight:500}
+.filters{display:none;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:18px;background:var(--surface)}
+.filters.open{display:grid}
+.filters label{display:flex;flex-direction:column;gap:8px;font:500 11px/1.2 inherit;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.filters select,.filters input[type=number]{height:40px;border-radius:var(--radius);border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:0 10px;font:400 14px inherit;letter-spacing:0;text-transform:none}
+.filters input[type=range]{accent-color:var(--sage)}
+.toggle{flex-direction:row!important;align-items:center;gap:8px!important;color:var(--ink)!important;font-size:13px!important;letter-spacing:0!important;text-transform:none!important}
+.status{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 14px;align-items:baseline;color:var(--muted);font-size:13px;margin:0 0 18px}
+.status strong{color:var(--ink);font-weight:500}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--sage);display:inline-block;margin-right:7px;vertical-align:middle}
+.dot.stale{background:#c2a14a}
+
+/* grid + cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:28px 20px;padding-bottom:36px}
+.card{display:flex;flex-direction:column;position:relative}
+.thumb{aspect-ratio:4/5;background:var(--img);border-radius:var(--radius);position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.thumb img{width:86%;height:86%;object-fit:contain;mix-blend-mode:var(--blend);transition:transform .5s ease}
+.card:hover .thumb img{transform:scale(1.04)}
+.thumb .ph{width:36px;height:36px;color:#a59f94;display:none}
+.thumb.noimg .ph{display:block}
+.pct{position:absolute;left:10px;top:10px;background:var(--surface);color:var(--accent);font:500 12px/1 inherit;letter-spacing:.04em;padding:6px 8px;border-radius:999px}
+.lc{position:absolute;left:10px;top:10px;background:var(--surface);color:var(--ink);font:500 11px/1 inherit;letter-spacing:.08em;text-transform:uppercase;padding:6px 8px;border-radius:999px}
+.star{position:absolute;right:8px;top:8px;border:0;background:transparent;width:34px;height:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#5f5b55}
+.star[aria-pressed=true]{color:var(--accent)}
+.body{padding:12px 2px 0;display:flex;flex-direction:column;gap:4px;flex:1}
+.meta{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.title{font-weight:400;font-size:15px;line-height:1.35;margin:2px 0 4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.title a{text-decoration:none}
+.title a:hover{text-decoration:underline;text-underline-offset:3px}
+.prices{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.now{font-size:16px;font-weight:600;letter-spacing:-.01em}
+.now.sale{color:var(--accent)}
+.was{color:var(--muted);text-decoration:line-through;font-size:13px}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px}
+.age{font-size:11.5px;color:var(--muted)}
+.go{font:500 11.5px/1 inherit;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:3px;white-space:nowrap}
+.go:hover{color:var(--accent)}
+.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:70px 10px}
+.more{display:flex;flex-direction:column;align-items:center;gap:12px;margin:0 0 56px}
+.more .count{font-size:12.5px;color:var(--muted)}
+.more .bar{width:180px;height:2px;background:var(--line);border-radius:2px;overflow:hidden}
+.more .bar i{display:block;height:100%;background:var(--ink)}
+[hidden]{display:none!important}
+
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:13.5px;line-height:1.6;padding:34px 0 56px}
+footer h3{color:var(--ink);font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;margin:0 0 12px}
+footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:30px}
+.src{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid var(--line)}
+.src span:last-child{font-size:12px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+@media (max-width:600px){
+  .wrap{padding:0 14px}
+  .hero{padding:28px 0 8px}
+  .grid{grid-template-columns:repeat(2,1fr);gap:22px 12px}
+  .thumb{aspect-ratio:1/1}
+  .title{font-size:13.5px}
+  .now{font-size:15px}
+  .foot{flex-direction:column;align-items:flex-start;gap:6px}
+  .seg button{padding:6px 7px}
+  .logo .cc{display:none}
+  .bar{gap:8px}
+  .logo{font-size:16px}
+}
+.chips.cond{margin-bottom:6px}
+.chips.cond .chip[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.cond{font-size:11px;letter-spacing:.04em;text-transform:uppercase;font-weight:600;color:var(--accent);margin-bottom:2px}
+.cond.g-sale,.cond.g-lc{color:var(--muted,#8a857c)}
+.cond.g-demo,.cond.g-refurb{color:var(--sage)}
+.avail{font-size:12px;color:var(--muted,#8a857c);margin:2px 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap bar">
+  <a class="logo" href="#" aria-label="OutletRadar"><span class="mark"></span>outletradar<span class="cc">.se</span></a>
+  <div class="spacer"></div>
+  <div class="seg" role="group" aria-label="Theme" id="theme"></div>
+  <div class="seg" role="group" aria-label="Language" id="lang"></div>
+</div></header>
+
+<main class="wrap">
+  <section class="hero"><p class="eyebrow" id="eyebrow"></p><h1 id="h1"></h1><p id="sub"></p></section>
+  <div class="searchrow">
+    <label class="search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <span class="sr" id="searchLbl"></span><input id="q" type="search" autocomplete="off"></label>
+    <button class="btn" id="filterBtn" aria-expanded="false"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M7 12h10M10 17h4"/></svg><span id="filterLbl"></span></button>
+  </div>
+  <div class="chips cond" id="condChips"></div>
+  <div class="chips" id="catChips"></div>
+  <section class="filters" id="filters">
+    <label><span id="lblSort"></span><select id="sort"></select></label>
+    <label><span id="lblShop"></span><select id="shop"></select></label>
+    <label><span id="lblBrand"></span><select id="brand"></select></label>
+    <label><span id="lblMin"></span><input id="minDisc" type="range" min="0" max="70" step="5" value="0"><span id="minDiscVal"></span></label>
+    <label><span id="lblMax"></span><input id="maxPrice" type="number" min="0" step="100" inputmode="numeric"></label>
+    <label class="toggle"><input type="checkbox" id="onlyWatch"><span id="lblWatch"></span></label>
+  </section>
+  <div class="status" id="status"></div>
+  <section class="grid" id="grid" aria-live="polite"></section>
+  <div class="more" id="more"><span class="count" id="moreCount"></span><span class="bar"><i id="moreBar"></i></span><button class="btn" id="moreBtn"></button></div>
+</main>
+
+<footer><div class="wrap cols">
+  <div><h3 id="fAbout"></h3><p id="fAboutTxt"></p><p id="fAff"></p></div>
+  <div><h3 id="fSources"></h3><div id="srcList"></div></div>
+</div></footer>
+
+<script>
+(() => {
+"use strict";
+const store = {
+  get(k,d){ try{ const v=localStorage.getItem("frse_"+k); return v==null?d:JSON.parse(v);}catch(e){return d;} },
+  set(k,v){ try{ localStorage.setItem("frse_"+k, JSON.stringify(v)); }catch(e){} }
+};
+const PAGE = 24;
+const CATS = ["coffee","appliances","smart_home","tv_audio","computers","kitchen","furniture","decor_lighting","home_textiles","clothing","shoes_women","shoes_men","shoes_kids","bags"];
+const GROUP = {returned:"ret",used:"ret",open_box:"open",damaged_packaging:"open",demo:"demo",refurbished:"refurb",manufacturer_replacement:"refurb",last_chance:"lc",clearance:"sale",unknown:"sale"};
+const GROUPS = ["ret","open","demo","refurb","lc","sale"];
+const BOOST = {ret:100,open:100,demo:100,refurb:100,lc:20,sale:0};
+const T = {
+ sv:{eyebrow:"Retur · Demo · Öppnad förpackning · Outlet · Rea",h1:"Returer, demoexemplar och fynd från svenska butiker.",sub:"Hemelektronik, smarta hem, kaffemaskiner, köksapparater, möbler, kläder och skor. Riktiga priser, butikens egna bilder, skick och lager i butik.",type:"Typ",
+   search:"Sök produkt eller märke",filters:"Filter",all:"Allt",sort:"Sortera",shop:"Butik",brand:"Märke",minDisc:"Minsta rabatt",maxPrice:"Maxpris (kr)",watch:"Bara sparade",
+   s_score:"Bästa fynd",s_disc:"Störst rabatt",s_save:"Störst besparing",s_low:"Lägst pris",s_high:"Högst pris",
+   results:n=>`${n} erbjudanden`,updated:"Priser lästa",stale:"Ögonblicksbild. Automatisk uppdatering startar vid driftsättning.",live:"Uppdateras automatiskt",
+   go:"Till butiken",save:"Spara",seen:"Sett",ago:{m:"min sedan",h:"tim sedan",d:"dagar sedan"},none:"Inga erbjudanden matchar. Prova att ta bort ett filter.",
+   more:n=>`Visa ${n} till`,shown:(a,b)=>`Visar ${a} av ${b}`,lastChance:"Utgår",
+   theme:{auto:"Auto",light:"Ljust",dark:"Mörkt"},
+   about:"Om OutletRadar",aboutTxt:"Varje erbjudande kommer från en namngiven svensk butik, med butikens egen bild och pris och tidpunkten då det lästes. Pris och lager ändras snabbt, kontrollera alltid hos butiken innan du köper. Rabatt visas bara när butiken själv anger ett tidigare pris.",
+   aff:"Vissa länkar kan bli affiliatelänkar. Det kostar dig ingenting och påverkar inte ordningen.",sources:"Källor",pending:"på väg",
+   grp:{ret:"Retur",open:"Öppnad förpackning",demo:"Demo",refurb:"Renoverad / ersättningsex.",lc:"Utgår",sale:"Rea / outlet"},inStore:"Butik",
+   cats:{coffee:"Kaffe & espresso",smart_home:"Smarta hem",tv_audio:"TV & ljud",computers:"Datorer",appliances:"Köksapparater",kitchen:"Kök",furniture:"Möbler",decor_lighting:"Belysning & dekor",home_textiles:"Hemtextil",clothing:"Kläder",shoes_women:"Skor dam",shoes_men:"Skor herr",shoes_kids:"Barnskor",bags:"Väskor"}},
+ en:{eyebrow:"Returns · Demo · Open box · Outlet · Sale",h1:"Returns, demo units and deals from Swedish stores.",sub:"Electronics, smart home, coffee machines, kitchen appliances, furniture, clothing and shoes. Real prices, the store's own photos, condition and in-store stock.",type:"Type",
+   search:"Search product or brand",filters:"Filters",all:"All",sort:"Sort",shop:"Store",brand:"Brand",minDisc:"Minimum discount",maxPrice:"Max price (SEK)",watch:"Saved only",
+   s_score:"Best deal",s_disc:"Biggest discount",s_save:"Biggest saving",s_low:"Lowest price",s_high:"Highest price",
+   results:n=>`${n} deals`,updated:"Prices read",stale:"Snapshot. Automatic updates start once deployed.",live:"Updates automatically",
+   go:"Go to store",save:"Save",seen:"Seen",ago:{m:"min ago",h:"h ago",d:"days ago"},none:"No deals match. Try removing a filter.",
+   more:n=>`Show ${n} more`,shown:(a,b)=>`Showing ${a} of ${b}`,lastChance:"Last chance",
+   theme:{auto:"Auto",light:"Light",dark:"Dark"},
+   about:"About OutletRadar",aboutTxt:"Every offer comes from a named Swedish store, with the store's own photo and price and the time it was read. Prices and stock change quickly, so always confirm at the store before buying. A discount is shown only when the store itself states an earlier price.",
+   aff:"Some links may become affiliate links. It costs you nothing and does not change the ranking.",sources:"Sources",pending:"coming",
+   grp:{ret:"Returned",open:"Open box",demo:"Demo",refurb:"Refurbished / replacement",lc:"Last chance",sale:"Sale / outlet"},inStore:"Store",
+   cats:{coffee:"Coffee & espresso",smart_home:"Smart home",tv_audio:"TV & audio",computers:"Computers",appliances:"Kitchen appliances",kitchen:"Kitchen",furniture:"Furniture",decor_lighting:"Lighting & decor",home_textiles:"Home textiles",clothing:"Clothing",shoes_women:"Women's shoes",shoes_men:"Men's shoes",shoes_kids:"Kids' shoes",bags:"Bags"}}
+};
+const LOCALE = {sv:"sv-SE",en:"en-GB"};
+const ICON = {
+  auto:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg>',
+  light:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+  dark:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></svg>'
+};
+const PH = '<svg class="ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 17-5-5-8 8"/></svg>';
+
+let DATA=[], META={}, lang=store.get("lang",(navigator.language||"sv").toLowerCase().startsWith("sv")?"sv":"en");
+if(!T[lang]) lang="sv";
+let theme=store.get("theme","auto");
+const st=Object.assign({q:"",grp:"",cat:"",shop:"",brand:"",sort:"score",minDisc:0,maxPrice:"",onlyWatch:false},store.get("filters",{}));
+st.limit=PAGE; st.q="";
+let watch=new Set(store.get("watch",[]));
+const $=id=>document.getElementById(id), t=()=>T[lang];
+const fmt=v=>new Intl.NumberFormat(LOCALE[lang],{style:"currency",currency:"SEK",maximumFractionDigits:v%1?2:0}).format(v);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const norm=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+const saving=d=>d.regular_price?d.regular_price-d.price:0;
+const grp=d=>GROUP[d.condition]||"sale";
+const score=d=>BOOST[grp(d)]+(d.discount_pct||0)+9*Math.log10(1+saving(d)/100);
+function ago(iso){const m=(Date.now()-new Date(iso).getTime())/60000,a=t().ago;if(m<90)return `${Math.max(1,Math.round(m))} ${a.m}`;if(m<2880)return `${Math.round(m/60)} ${a.h}`;return `${Math.round(m/1440)} ${a.d}`;}
+
+function setTheme(v){
+  theme=v; document.documentElement.dataset.theme=v; store.set("theme",v);
+  const dark=v==="dark"||(v==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);
+  document.querySelector('meta[name=theme-color]').setAttribute("content",dark?"#151514":"#f6f3ee");
+  $("theme").innerHTML=["auto","light","dark"].map(k=>`<button data-t="${k}" aria-pressed="${k===theme}" title="${t().theme[k]}" aria-label="${t().theme[k]}">${ICON[k]}</button>`).join("");
+}
+function applyText(){
+  const x=t(); document.documentElement.lang=lang;
+  $("eyebrow").textContent=x.eyebrow; $("h1").textContent=x.h1; $("sub").textContent=x.sub; $("q").placeholder=x.search; $("searchLbl").textContent=x.search;
+  $("filterLbl").textContent=x.filters; $("lblSort").textContent=x.sort; $("lblShop").textContent=x.shop; $("lblBrand").textContent=x.brand;
+  $("lblMin").textContent=x.minDisc; $("lblMax").textContent=x.maxPrice; $("lblWatch").textContent=x.watch;
+  $("fAbout").textContent=x.about; $("fAboutTxt").textContent=x.aboutTxt; $("fAff").textContent=x.aff; $("fSources").textContent=x.sources;
+  $("lang").innerHTML=Object.keys(T).map(k=>`<button data-l="${k}" aria-pressed="${k===lang}">${k.toUpperCase()}</button>`).join("");
+  setTheme(theme);
+  const count={}; DATA.forEach(d=>count[d.category]=(count[d.category]||0)+1);
+  const gc={}; DATA.forEach(d=>{const g=grp(d);gc[g]=(gc[g]||0)+1;});
+  $("condChips").innerHTML=`<button class="chip" data-g="" aria-pressed="${!st.grp}">${x.type}: ${x.all}</button>`+
+    GROUPS.filter(g=>gc[g]).map(g=>`<button class="chip g-${g}" data-g="${g}" aria-pressed="${st.grp===g}">${x.grp[g]}<span class="n">${gc[g]}</span></button>`).join("");
+  $("catChips").innerHTML=`<button class="chip" data-c="" aria-pressed="${!st.cat}">${x.all}<span class="n">${DATA.length}</span></button>`+
+    CATS.filter(c=>count[c]).map(c=>`<button class="chip" data-c="${c}" aria-pressed="${st.cat===c}">${x.cats[c]}<span class="n">${count[c]}</span></button>`).join("");
+  $("sort").innerHTML=["score","disc","save","low","high"].map(s=>`<option value="${s}" ${st.sort===s?"selected":""}>${x["s_"+s]}</option>`).join("");
+  const shops=[...new Set(DATA.map(d=>d.retailer))].sort();
+  $("shop").innerHTML=`<option value="">${x.all}</option>`+shops.map(s=>`<option ${st.shop===s?"selected":""}>${esc(s)}</option>`).join("");
+  const brands=[...new Set(DATA.map(d=>d.brand).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  $("brand").innerHTML=`<option value="">${x.all}</option>`+brands.map(b=>`<option ${st.brand===b?"selected":""}>${esc(b)}</option>`).join("");
+  $("minDisc").value=st.minDisc; $("minDiscVal").textContent=st.minDisc+" %"; $("maxPrice").value=st.maxPrice; $("onlyWatch").checked=st.onlyWatch;
+  renderSources();
+}
+function filtered(){
+  const terms=norm(st.q).split(/\s+/).filter(Boolean);
+  const out=DATA.filter(d=>{
+    if(st.grp&&grp(d)!==st.grp) return false;
+    if(st.cat&&d.category!==st.cat) return false;
+    if(st.shop&&d.retailer!==st.shop) return false;
+    if(st.brand&&d.brand!==st.brand) return false;
+    if(st.minDisc&&(d.discount_pct||0)<st.minDisc) return false;
+    if(st.maxPrice&&d.price>+st.maxPrice) return false;
+    if(st.onlyWatch&&!watch.has(d.id)) return false;
+    if(terms.length){const h=d._h||(d._h=norm([d.title,d.brand,d.retailer,T.sv.cats[d.category],T.en.cats[d.category],T.sv.grp[grp(d)],T.en.grp[grp(d)],d.condition_text].join(" ")));if(!terms.every(w=>h.includes(w)))return false;}
+    return true;});
+  const S={score:(a,b)=>score(b)-score(a),disc:(a,b)=>(b.discount_pct||0)-(a.discount_pct||0),save:(a,b)=>saving(b)-saving(a),low:(a,b)=>a.price-b.price,high:(a,b)=>b.price-a.price};
+  out.sort(S[st.sort]||S.score);
+  if((st.sort||"score")!=="score") return out;
+  // mix stores so one retailer does not fill the first screens
+  const seen={}, sc=new Map(out.map(d=>{const k=seen[d.retailer]=(seen[d.retailer]||0)+1;return [d,score(d)-4*k];}));
+  return out.sort((a,b)=>sc.get(b)-sc.get(a));
+}
+function imgFallback(u){ return /ikea\.com/.test(u) ? u.replace(/\?f=\w+$/,"?f=xxs") : ""; }
+function card(d){
+  const x=t(), link=esc(d.link||d.url);
+  const fb=d.image_url?imgFallback(d.image_url):"";
+  const img=d.image_url?`<img loading="lazy" decoding="async" src="${esc(d.image_url)}" ${fb?`data-fb="${esc(fb)}"`:""} alt="${esc(d.title)}">`:"";
+  const badge=d.discount_pct?`<span class="pct">−${Math.round(d.discount_pct)}%</span>`:(d.condition==="last_chance"?`<span class="lc">${x.lastChance}</span>`:"");
+  return `<article class="card">
+    <a class="thumb${d.image_url?"":" noimg"}" href="${link}" target="_blank" rel="noopener sponsored" tabindex="-1">${img}${PH}${badge}</a>
+    <button class="star" data-w="${d.id}" aria-pressed="${watch.has(d.id)}" aria-label="${x.save}"><svg width="18" height="18" viewBox="0 0 24 24" fill="${watch.has(d.id)?"currentColor":"none"}" stroke="currentColor" stroke-width="1.6"><path d="M12 20.5s-7.5-4.4-7.5-10A4.3 4.3 0 0 1 12 7.8a4.3 4.3 0 0 1 7.5 2.7c0 5.6-7.5 10-7.5 10z"/></svg></button>
+    <div class="body">
+      <div class="cond g-${grp(d)}">${x.grp[grp(d)]}${(/skick: ([^.|]+)/i.exec(d.condition_text||"")||[])[1]?` · ${esc(/skick: ([^.|]+)/i.exec(d.condition_text)[1])}`:""}</div>
+      <div class="meta">${esc(d.brand||d.retailer)}${d.brand&&d.brand!==d.retailer?` · ${esc(d.retailer)}`:""}</div>
+      <h2 class="title"><a href="${link}" target="_blank" rel="noopener sponsored">${esc(d.title)}</a></h2>
+      <div class="prices"><span class="now${d.regular_price?" sale":""}">${fmt(d.price)}</span>${d.regular_price?`<span class="was">${fmt(d.regular_price)}</span>`:""}</div>
+      ${d.store||/butik/i.test(d.availability_text||"")?`<div class="avail">${d.store?`${x.inStore}: ${esc(d.store)}`:esc(d.availability_text)}</div>`:""}
+      <div class="foot"><span class="age">${x.seen} ${ago(d.observed_at)}</span><a class="go" href="${link}" target="_blank" rel="noopener sponsored">${x.go}</a></div>
+    </div></article>`;
+}
+function wireImages(){
+  $("grid").querySelectorAll("img").forEach(im=>{
+    if(im.dataset.wired) return; im.dataset.wired=1;
+    im.addEventListener("error",()=>{ if(im.dataset.fb){ const f=im.dataset.fb; delete im.dataset.fb; im.src=f; } else { im.parentNode.classList.add("noimg"); im.remove(); } });
+  });
+}
+function render(){
+  const list=filtered(),x=t(), shown=Math.min(st.limit,list.length);
+  $("grid").innerHTML=list.length?list.slice(0,st.limit).map(card).join(""):`<div class="empty">${x.none}</div>`;
+  wireImages();
+  const rest=list.length-shown;
+  $("more").hidden=list.length===0;
+  $("moreCount").textContent=x.shown(shown,list.length);
+  $("moreBar").style.width=(list.length?100*shown/list.length:0)+"%";
+  $("moreBtn").hidden=rest<=0;
+  $("moreBtn").textContent=x.more(Math.min(PAGE,rest));
+  const newest=DATA.reduce((m,d)=>d.observed_at>m?d.observed_at:m,"");
+  const when=newest?new Date(newest).toLocaleString(LOCALE[lang],{dateStyle:"medium",timeStyle:"short"}):"";
+  $("status").innerHTML=`<strong>${x.results(list.length)}</strong><span><span class="dot ${META.live?"":"stale"}"></span>${x.updated}: ${when}. ${META.live?x.live:x.stale}</span>`;
+  store.set("filters",{grp:st.grp,cat:st.cat,shop:st.shop,brand:st.brand,sort:st.sort,minDisc:st.minDisc,maxPrice:st.maxPrice,onlyWatch:st.onlyWatch});
+}
+function renderSources(){
+  const by={}; DATA.forEach(d=>by[d.retailer]=(by[d.retailer]||0)+1);
+  const rows=Object.entries(by).sort((a,b)=>b[1]-a[1]).map(([r,n])=>`<div class="src"><span>${esc(r)}</span><span>${n}</span></div>`);
+  const pend=(META.sources||[]).filter(s=>!s.enabled).map(s=>`<div class="src"><span>${esc(s.retailer)}</span><span>${t().pending}</span></div>`);
+  $("srcList").innerHTML=rows.join("")+pend.join("");
+}
+function resetPage(){ st.limit=PAGE; }
+function bind(){
+  let tm; $("q").addEventListener("input",e=>{clearTimeout(tm);tm=setTimeout(()=>{st.q=e.target.value;resetPage();render();},120);});
+  $("filterBtn").addEventListener("click",()=>{const o=$("filters").classList.toggle("open");$("filterBtn").setAttribute("aria-expanded",o);});
+  $("lang").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;lang=b.dataset.l;store.set("lang",lang);applyText();render();});
+  $("theme").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;setTheme(b.dataset.t);});
+  matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",()=>{ if(theme==="auto") setTheme("auto"); });
+  $("condChips").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;st.grp=b.dataset.g;resetPage();applyText();render();});
+  $("catChips").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;st.cat=b.dataset.c;resetPage();applyText();render();});
+  $("sort").addEventListener("change",e=>{st.sort=e.target.value;resetPage();render();});
+  $("shop").addEventListener("change",e=>{st.shop=e.target.value;resetPage();render();});
+  $("brand").addEventListener("change",e=>{st.brand=e.target.value;resetPage();render();});
+  $("minDisc").addEventListener("input",e=>{st.minDisc=+e.target.value;$("minDiscVal").textContent=st.minDisc+" %";resetPage();render();});
+  $("maxPrice").addEventListener("input",e=>{st.maxPrice=e.target.value;resetPage();render();});
+  $("onlyWatch").addEventListener("change",e=>{st.onlyWatch=e.target.checked;resetPage();render();});
+  $("moreBtn").addEventListener("click",()=>{ const y=window.scrollY; st.limit+=PAGE; render(); window.scrollTo(0,y); });
+  $("grid").addEventListener("click",e=>{const b=e.target.closest(".star");if(!b)return;e.preventDefault();const id=b.dataset.w;watch.has(id)?watch.delete(id):watch.add(id);store.set("watch",[...watch]);
+    b.setAttribute("aria-pressed",watch.has(id)); b.querySelector("svg").setAttribute("fill",watch.has(id)?"currentColor":"none"); if(st.onlyWatch) render(); });
+}
+async function load(){
+  if(window.__FR_DATA__){DATA=window.__FR_DATA__.listings;META=window.__FR_DATA__.meta||{};}
+  else{try{const[l,m]=await Promise.all([fetch("data/listings.json",{cache:"no-cache"}).then(r=>r.json()),fetch("data/meta.json",{cache:"no-cache"}).then(r=>r.json()).catch(()=>({}))]);DATA=l;META=m;}catch(e){DATA=[];}}
+  DATA=DATA.filter(d=>d.country==="SE");
+  META.live=(META.health||[]).some(h=>h.ok&&!/^snapshot/.test(h.source));
+  applyText(); bind(); render();
+}
+load();
+})();
+</script>
+</body>
+</html>

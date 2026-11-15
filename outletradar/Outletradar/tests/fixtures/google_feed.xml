@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<rss xmlns:g="http://base.google.com/ns/1.0" version="2.0"><channel>
+<item><g:id>1</g:id><g:title>Kaffekvarn DEMO</g:title><g:price>1990.00 SEK</g:price><g:condition>new</g:condition><g:link>https://ex.se/1</g:link></item>
+<item><g:id>2</g:id><g:title>Robotdammsugare</g:title><g:price>4990.00 SEK</g:price><g:sale_price>2990.00 SEK</g:sale_price><g:condition>new</g:condition><g:link>https://ex.se/2</g:link></item>
+<item><g:id>3</g:id><g:title>Vanlig lampa</g:title><g:price>499.00 SEK</g:price><g:sale_price>449.00 SEK</g:sale_price><g:condition>new</g:condition><g:link>https://ex.se/3</g:link></item>
+</channel></rss>

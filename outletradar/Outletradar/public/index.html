@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FyndRadar</title>
+<meta name="description" content="Outlet, demo, returvaror och B-varor från nordiska butiker på ett ställe.">
+<meta name="theme-color" content="#0f3d3a">
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{
+  --bg:#f6f4ef; --surface:#ffffff; --ink:#14201f; --muted:#5d6b69; --line:#e3dfd6;
+  --brand:#0f3d3a; --brand-2:#1b6b63; --accent:#ff6a3d; --accent-ink:#ffffff; --ok:#1f7a4d;
+  --chip:#ece8df; --radius:14px; --shadow:0 1px 2px rgba(20,32,31,.06),0 4px 16px rgba(20,32,31,.06);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#0e1514;--surface:#162120;--ink:#e9efed;--muted:#9fb0ad;--line:#253331;--chip:#1f2c2a;--brand:#7fd1c4;--brand-2:#9fe0d5;--shadow:none}
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+header.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:12px;height:58px}
+.logo{display:flex;align-items:center;gap:8px;font-weight:800;letter-spacing:-.02em;font-size:20px;color:var(--brand);text-decoration:none}
+.logo svg{flex:none}
+.spacer{flex:1}
+.lang{display:flex;gap:2px;background:var(--chip);border-radius:999px;padding:3px}
+.lang button{border:0;background:transparent;color:var(--muted);font:600 12px/1 inherit;padding:7px 9px;border-radius:999px;cursor:pointer}
+.lang button[aria-pressed=true]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.hero{padding:22px 0 8px}
+.hero h1{font-size:clamp(24px,4.4vw,40px);line-height:1.08;letter-spacing:-.03em;margin:0 0 6px;max-width:760px}
+.hero p{margin:0;color:var(--muted);max-width:640px}
+.searchrow{display:flex;gap:8px;margin:16px 0 10px}
+.search{flex:1;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:0 12px;box-shadow:var(--shadow)}
+.search input{flex:1;border:0;outline:0;background:transparent;color:var(--ink);font:16px/1 inherit;height:46px;min-width:0}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;padding:0 14px;height:48px;font:600 14px/1 inherit;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+@media (prefers-color-scheme: dark){.btn.primary{color:#062320}}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:4px 0 10px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:8px 12px;font:600 13px/1 inherit;cursor:pointer}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.filters{display:none;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-bottom:12px}
+.filters.open{display:grid}
+.filters label{display:flex;flex-direction:column;gap:6px;font:600 12px/1.2 inherit;color:var(--muted)}
+.filters select,.filters input[type=number]{height:40px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:0 10px;font:14px inherit}
+.filters input[type=range]{accent-color:var(--brand-2)}
+.toggle{flex-direction:row!important;align-items:center;gap:8px!important;color:var(--ink)!important;font-size:13px!important}
+.status{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;color:var(--muted);font-size:13px;margin:4px 0 14px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--ok);display:inline-block;margin-right:6px}
+.dot.stale{background:#c9a227}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;padding-bottom:40px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden;position:relative}
+.thumb{aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,color-mix(in srgb,var(--brand-2) 14%,var(--surface)),color-mix(in srgb,var(--accent) 10%,var(--surface)));position:relative}
+.thumb img{width:100%;height:100%;object-fit:contain;background:#fff}
+.thumb .ico{width:46px;height:46px;opacity:.75;color:var(--brand)}
+.pct{position:absolute;left:10px;top:10px;background:var(--accent);color:var(--accent-ink);font:800 14px/1 inherit;padding:7px 9px;border-radius:9px}
+.star{position:absolute;right:8px;top:8px;border:0;background:var(--surface);border-radius:50%;width:34px;height:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);color:var(--muted)}
+.star[aria-pressed=true]{color:var(--accent)}
+.body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:7px;flex:1}
+.meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--muted)}
+.tag{background:var(--chip);border-radius:6px;padding:3px 7px;font-weight:600;color:var(--ink)}
+.tag.cond{background:color-mix(in srgb,var(--brand-2) 16%,var(--surface));color:var(--brand)}
+.title{font-weight:700;font-size:15px;line-height:1.3;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.prices{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.now{font-size:21px;font-weight:800;letter-spacing:-.02em}
+.was{color:var(--muted);text-decoration:line-through;font-size:14px}
+.save{color:var(--ok);font-weight:700;font-size:13px}
+.ctext{font-size:12.5px;color:var(--muted);line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;padding-top:6px}
+.age{font-size:11.5px;color:var(--muted)}
+.go{background:var(--brand);color:#fff;text-decoration:none;border-radius:10px;padding:9px 12px;font:700 13px/1 inherit;white-space:nowrap}
+@media (prefers-color-scheme: dark){.go{color:#062320}}
+.go.alt{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:60px 10px}
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:13px;padding:22px 0 40px}
+footer h3{color:var(--ink);font-size:14px;margin:0 0 8px}
+footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}
+.src{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px dashed var(--line)}
+.pill{font-size:11px;padding:2px 7px;border-radius:999px;background:var(--chip)}
+.pill.on{background:color-mix(in srgb,var(--ok) 20%,var(--surface));color:var(--ok)}
+.more{display:flex;justify-content:center;margin:-20px 0 40px}
+@media (max-width:560px){
+  .grid{grid-template-columns:1fr;gap:10px}
+  .card{flex-direction:row}
+  .thumb{aspect-ratio:auto;width:92px;flex:none}
+  .thumb .ico{width:34px;height:34px}
+  .pct{left:6px;top:6px;font-size:12px;padding:5px 6px}
+  .star{right:auto;left:29px;top:auto;bottom:8px;width:30px;height:30px}
+  .body{padding:10px 12px 12px;gap:5px}
+  .now{font-size:19px}
+  .ctext{-webkit-line-clamp:1}
+  .go{padding:8px 10px;font-size:12.5px}
+}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap bar">
+  <a class="logo" href="#" aria-label="FyndRadar">
+    <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="16" cy="16" r="8" fill="none" stroke="currentColor" stroke-width="2" opacity=".55"/><path d="M16 16 L27 9" stroke="#ff6a3d" stroke-width="3" stroke-linecap="round"/><circle cx="16" cy="16" r="2.6" fill="#ff6a3d"/></svg>
+    FyndRadar
+  </a>
+  <div class="spacer"></div>
+  <div class="lang" role="group" aria-label="Language" id="lang"></div>
+</div></header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1 id="h1"></h1>
+    <p id="sub"></p>
+  </section>
+
+  <div class="searchrow">
+    <label class="search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <span class="sr" id="searchLbl"></span><input id="q" type="search" autocomplete="off"></label>
+    <button class="btn" id="filterBtn" aria-expanded="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M7 12h10M10 18h4"/></svg><span id="filterLbl"></span></button>
+  </div>
+
+  <div class="chips" id="countryChips"></div>
+  <div class="chips" id="condChips"></div>
+
+  <section class="filters" id="filters">
+    <label><span id="lblCat"></span><select id="cat"></select></label>
+    <label><span id="lblSort"></span><select id="sort"></select></label>
+    <label><span id="lblMin"></span><input id="minDisc" type="range" min="0" max="70" step="5" value="0"><span id="minDiscVal"></span></label>
+    <label><span id="lblMax"></span><input id="maxPrice" type="number" min="0" step="100" inputmode="numeric"></label>
+    <label><span id="lblCity"></span><select id="city"></select></label>
+    <label class="toggle"><input type="checkbox" id="onlyDirect"><span id="lblDirect"></span></label>
+    <label class="toggle"><input type="checkbox" id="onlyWatch"><span id="lblWatch"></span></label>
+  </section>
+
+  <div class="status" id="status"></div>
+  <section class="grid" id="grid" aria-live="polite"></section>
+  <div class="more"><button class="btn" id="moreBtn" hidden></button></div>
+</main>
+
+<footer><div class="wrap cols">
+  <div><h3 id="fAbout"></h3><p id="fAboutTxt"></p><p id="fAff"></p></div>
+  <div><h3 id="fSources"></h3><div id="srcList"></div></div>
+</div></footer>
+
+<script>
+(() => {
+"use strict";
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem("fr_"+k); return v==null ? d : JSON.parse(v); }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem("fr_"+k, JSON.stringify(v)); }catch(e){} }
+};
+
+const T = {
+ sv:{h1:"Outlet, demo och returfynd från nordiska butiker. På ett ställe.",sub:"FyndRadar samlar riktiga erbjudanden med pris, rabatt, skick och direktlänk till butiken.",search:"Sök produkt, märke eller butik",filters:"Filter",all:"Alla",cat:"Kategori",sort:"Sortera",minDisc:"Minsta rabatt",maxPrice:"Maxpris",city:"Min plats",direct:"Bara direktlänk till produkt",watch:"Bara bevakade",
+   s_score:"Bästa fynd",s_disc:"Störst rabatt",s_low:"Lägst pris",s_high:"Högst pris",s_save:"Störst besparing",s_near:"Närmast mig",
+   results:n=>`${n} erbjudanden`,updated:"Data",stale:"Ögonblicksbild, live-uppdatering startar vid driftsättning",live:"Uppdateras automatiskt",go:"Till butiken",search_at:"Sök hos",listing:"Se outletlistan",save:"Spara",seen:"Sett",ago:{m:"min sedan",h:"tim sedan",d:"dagar sedan"},none:"Inga erbjudanden matchar. Prova att ta bort ett filter.",more:"Visa fler",
+   delivery:"Leverans",instore:"I butik",km:"km",geo:"Använd min position",nogeo:"Välj stad",
+   about:"Om FyndRadar",aboutTxt:"Varje erbjudande kommer från en namngiven butik och visar när det senast lästes. Pris och lager kan ändras snabbt, kontrollera alltid hos butiken innan du köper.",aff:"Vissa länkar kan vara affiliatelänkar. Det kostar dig ingenting och påverkar inte ordningen.",sources:"Källor",
+   cond:{open_box:"Öppnad förpackning",demo:"Demo",returned:"Retur",manufacturer_replacement:"Ersättningsex.",refurbished:"Renoverad",damaged_packaging:"Skadad förp.",used:"Bruksspår",clearance:"Utförsäljning",unknown:"Okänt skick"},
+   cats:{computers:"Datorer",components:"Datorkomponenter",monitors:"Skärmar",phones_tablets:"Mobil & surfplatta",gaming:"Gaming",peripherals:"Tangentbord & mus",audio:"Ljud",tv_projectors:"TV & projektor",smart_home:"Smarta hem",networking:"Nätverk",appliances:"Vitvaror & hushåll",cables_power:"Kablar & ström",wearables:"Wearables",sport_outdoor:"Sport & fritid",other:"Övrigt"},
+   countries:{SE:"Sverige",DK:"Danmark",NO:"Norge"}},
+ en:{h1:"Outlet, demo and returned deals from Nordic retailers. In one place.",sub:"FyndRadar gathers real offers with price, discount, condition and a direct link to the store.",search:"Search product, brand or store",filters:"Filters",all:"All",cat:"Category",sort:"Sort",minDisc:"Minimum discount",maxPrice:"Max price",city:"My location",direct:"Direct product links only",watch:"Watchlist only",
+   s_score:"Best deal",s_disc:"Biggest discount",s_low:"Lowest price",s_high:"Highest price",s_save:"Biggest saving",s_near:"Nearest me",
+   results:n=>`${n} deals`,updated:"Data",stale:"Snapshot, live updates start once deployed",live:"Updates automatically",go:"Go to store",search_at:"Search at",listing:"Open outlet list",save:"Save",seen:"Seen",ago:{m:"min ago",h:"h ago",d:"days ago"},none:"No deals match. Try removing a filter.",more:"Show more",
+   delivery:"Delivery",instore:"In store",km:"km",geo:"Use my location",nogeo:"Pick a city",
+   about:"About FyndRadar",aboutTxt:"Every offer comes from a named retailer and shows when it was last read. Prices and stock change quickly, so always confirm at the store before buying.",aff:"Some links may be affiliate links. It costs you nothing and does not change the ranking.",sources:"Sources",
+   cond:{open_box:"Open box",demo:"Demo",returned:"Returned",manufacturer_replacement:"Replacement unit",refurbished:"Refurbished",damaged_packaging:"Damaged box",used:"Signs of use",clearance:"Clearance",unknown:"Condition n/a"},
+   cats:{computers:"Computers",components:"PC components",monitors:"Monitors",phones_tablets:"Phones & tablets",gaming:"Gaming",peripherals:"Keyboards & mice",audio:"Audio",tv_projectors:"TV & projectors",smart_home:"Smart home",networking:"Networking",appliances:"Appliances",cables_power:"Cables & power",wearables:"Wearables",sport_outdoor:"Sport & outdoor",other:"Other"},
+   countries:{SE:"Sweden",DK:"Denmark",NO:"Norway"}},
+ da:{h1:"Outlet, demo og returvarer fra nordiske butikker. Samlet ét sted.",sub:"FyndRadar samler rigtige tilbud med pris, rabat, stand og direkte link til butikken.",search:"Søg produkt, mærke eller butik",filters:"Filtre",all:"Alle",cat:"Kategori",sort:"Sortér",minDisc:"Mindste rabat",maxPrice:"Maks. pris",city:"Min placering",direct:"Kun direkte produktlinks",watch:"Kun gemte",
+   s_score:"Bedste fund",s_disc:"Største rabat",s_low:"Laveste pris",s_high:"Højeste pris",s_save:"Største besparelse",s_near:"Nærmest mig",
+   results:n=>`${n} tilbud`,updated:"Data",stale:"Øjebliksbillede, live-opdatering starter ved idriftsættelse",live:"Opdateres automatisk",go:"Til butikken",search_at:"Søg hos",listing:"Se outletlisten",save:"Gem",seen:"Set",ago:{m:"min siden",h:"t siden",d:"dage siden"},none:"Ingen tilbud matcher. Prøv at fjerne et filter.",more:"Vis flere",
+   delivery:"Levering",instore:"I butik",km:"km",geo:"Brug min position",nogeo:"Vælg by",
+   about:"Om FyndRadar",aboutTxt:"Hvert tilbud kommer fra en navngiven butik og viser, hvornår det sidst blev læst. Pris og lager kan ændre sig hurtigt, så tjek altid hos butikken før køb.",aff:"Nogle links kan være affiliate-links. Det koster dig intet og påvirker ikke rækkefølgen.",sources:"Kilder",
+   cond:{open_box:"Åbnet emballage",demo:"Demo",returned:"Returvare",manufacturer_replacement:"Erstatningsvare",refurbished:"Istandsat",damaged_packaging:"Skadet emballage",used:"Brugsspor",clearance:"Udsalg",unknown:"Ukendt stand"},
+   cats:{computers:"Computere",components:"PC-komponenter",monitors:"Skærme",phones_tablets:"Mobil & tablet",gaming:"Gaming",peripherals:"Tastatur & mus",audio:"Lyd",tv_projectors:"TV & projektor",smart_home:"Smart home",networking:"Netværk",appliances:"Hvidevarer",cables_power:"Kabler & strøm",wearables:"Wearables",sport_outdoor:"Sport & fritid",other:"Andet"},
+   countries:{SE:"Sverige",DK:"Danmark",NO:"Norge"}},
+ no:{h1:"Outlet, demo og returvarer fra nordiske butikker. Samlet på ett sted.",sub:"FyndRadar samler ekte tilbud med pris, rabatt, tilstand og direkte lenke til butikken.",search:"Søk produkt, merke eller butikk",filters:"Filtre",all:"Alle",cat:"Kategori",sort:"Sorter",minDisc:"Minste rabatt",maxPrice:"Makspris",city:"Min plassering",direct:"Bare direkte produktlenker",watch:"Bare lagrede",
+   s_score:"Beste kjøp",s_disc:"Størst rabatt",s_low:"Lavest pris",s_high:"Høyest pris",s_save:"Størst besparelse",s_near:"Nærmest meg",
+   results:n=>`${n} tilbud`,updated:"Data",stale:"Øyeblikksbilde, live-oppdatering starter ved drift",live:"Oppdateres automatisk",go:"Til butikken",search_at:"Søk hos",listing:"Se outletlisten",save:"Lagre",seen:"Sett",ago:{m:"min siden",h:"t siden",d:"dager siden"},none:"Ingen tilbud passer. Prøv å fjerne et filter.",more:"Vis flere",
+   delivery:"Levering",instore:"I butikk",km:"km",geo:"Bruk min posisjon",nogeo:"Velg by",
+   about:"Om FyndRadar",aboutTxt:"Hvert tilbud kommer fra en navngitt butikk og viser når det sist ble lest. Pris og lager kan endre seg raskt, så sjekk alltid hos butikken før du kjøper.",aff:"Noen lenker kan være affiliatelenker. Det koster deg ingenting og påvirker ikke rekkefølgen.",sources:"Kilder",
+   cond:{open_box:"Åpnet emballasje",demo:"Demo",returned:"Returvare",manufacturer_replacement:"Erstatningsvare",refurbished:"Oppusset",damaged_packaging:"Skadet emballasje",used:"Bruksspor",clearance:"Utsalg",unknown:"Ukjent tilstand"},
+   cats:{computers:"Datamaskiner",components:"PC-komponenter",monitors:"Skjermer",phones_tablets:"Mobil & nettbrett",gaming:"Gaming",peripherals:"Tastatur & mus",audio:"Lyd",tv_projectors:"TV & projektor",smart_home:"Smarthus",networking:"Nettverk",appliances:"Hvitevarer",cables_power:"Kabler & strøm",wearables:"Wearables",sport_outdoor:"Sport & fritid",other:"Annet"},
+   countries:{SE:"Sverige",DK:"Danmark",NO:"Norge"}}
+};
+const LOCALE = {sv:"sv-SE",en:"en-GB",da:"da-DK",no:"nb-NO"};
+const FLAG = {SE:"🇸🇪",DK:"🇩🇰",NO:"🇳🇴"};
+// City centres for manual location (approximate, for distance sorting only).
+const CITIES = [
+ ["Stockholm","SE",59.3293,18.0686],["Göteborg","SE",57.7089,11.9746],["Malmö","SE",55.6050,13.0038],["Uppsala","SE",59.8586,17.6389],["Linköping","SE",58.4108,15.6214],["Umeå","SE",63.8258,20.2630],
+ ["København","DK",55.6761,12.5683],["Aarhus","DK",56.1629,10.2039],["Odense","DK",55.4038,10.4024],["Aalborg","DK",57.0488,9.9217],
+ ["Oslo","NO",59.9139,10.7522],["Bergen","NO",60.3913,5.3221],["Trondheim","NO",63.4305,10.3951],["Stavanger","NO",58.9690,5.7331],["Kongsvinger","NO",60.1906,11.9977]
+];
+// Approximate FX used ONLY to rank savings across currencies (never displayed).
+const FX_TO_SEK = {SEK:1, DKK:1.5, NOK:0.95, EUR:11};
+const ICONS = {
+ computers:'<rect x="5" y="9" width="30" height="20" rx="2"/><path d="M2 33h36"/>',
+ components:'<rect x="9" y="9" width="22" height="22" rx="2"/><path d="M14 4v5M20 4v5M26 4v5M14 31v5M20 31v5M26 31v5M4 14h5M4 20h5M4 26h5M31 14h5M31 20h5M31 26h5"/>',
+ monitors:'<rect x="4" y="6" width="32" height="21" rx="2"/><path d="M15 34h10M20 27v7"/>',
+ phones_tablets:'<rect x="12" y="4" width="16" height="32" rx="3"/><path d="M18 31h4"/>',
+ gaming:'<path d="M10 14h20a6 6 0 0 1 6 6l-1 7a4 4 0 0 1-7 2l-3-3H15l-3 3a4 4 0 0 1-7-2l-1-7a6 6 0 0 1 6-6z"/><path d="M12 19v5M9.5 21.5h5"/>',
+ peripherals:'<rect x="3" y="13" width="34" height="14" rx="2"/><path d="M8 18h2M13 18h2M18 18h2M23 18h2M28 18h2M10 23h20"/>',
+ audio:'<path d="M8 22v-2a12 12 0 0 1 24 0v2"/><rect x="5" y="22" width="7" height="11" rx="2"/><rect x="28" y="22" width="7" height="11" rx="2"/>',
+ tv_projectors:'<rect x="3" y="7" width="34" height="22" rx="2"/><path d="M12 35h16"/>',
+ smart_home:'<path d="M5 19 20 6l15 13"/><path d="M9 16v18h22V16"/><circle cx="20" cy="24" r="3"/>',
+ networking:'<path d="M6 16a20 20 0 0 1 28 0M10 21a14 14 0 0 1 20 0M15 26a7 7 0 0 1 10 0"/><circle cx="20" cy="31" r="2"/>',
+ appliances:'<rect x="8" y="4" width="24" height="32" rx="2"/><circle cx="20" cy="22" r="7"/><path d="M12 9h4"/>',
+ cables_power:'<path d="M14 4v8M26 4v8M10 12h20v6a10 10 0 0 1-20 0zM20 28v8"/>',
+ wearables:'<circle cx="20" cy="20" r="8"/><path d="M15 13l2-9h6l2 9M15 27l2 9h6l2-9"/>',
+ sport_outdoor:'<circle cx="10" cy="29" r="6"/><circle cx="30" cy="29" r="6"/><path d="M10 29l7-13h9l4 13M17 16l-2-5h-4"/>',
+ other:'<rect x="6" y="11" width="28" height="22" rx="2"/><path d="M6 17h28M16 11V7h8v4"/>'
+};
+
+let DATA = [], META = {}, lang = store.get("lang", (navigator.language||"sv").slice(0,2));
+if(lang==="nb"||lang==="nn") lang="no"; if(!T[lang]) lang="sv";
+const st = Object.assign({q:"",country:"",cond:"",cat:"",sort:"score",minDisc:0,maxPrice:"",city:"",onlyDirect:false,onlyWatch:false,limit:48}, store.get("filters",{}));
+st.limit = 48; st.q = "";
+let watch = new Set(store.get("watch", []));
+let here = null; // {lat,lon,country}
+
+const $ = id => document.getElementById(id);
+const t = () => T[lang];
+const fmt = (v, cur) => new Intl.NumberFormat(LOCALE[lang], {style:"currency",currency:cur,maximumFractionDigits: v%1?2:0}).format(v);
+const esc = s => String(s??"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const norm = s => String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+
+function km(a,b){ const R=6371, r=x=>x*Math.PI/180; const dLa=r(b.lat-a.lat), dLo=r(b.lon-a.lon);
+  const h=Math.sin(dLa/2)**2+Math.cos(r(a.lat))*Math.cos(r(b.lat))*Math.sin(dLo/2)**2; return 2*R*Math.asin(Math.sqrt(h)); }
+function savingSEK(d){ return d.regular_price ? (d.regular_price-d.price)*(FX_TO_SEK[d.currency]||1) : 0; }
+function score(d){ const p=d.discount_pct||0, s=savingSEK(d);
+  const cond={open_box:6,demo:4,manufacturer_replacement:4,returned:3,refurbished:3,damaged_packaging:3,clearance:5,used:0,unknown:1}[d.condition]||0;
+  const direct = d.url_kind==="product" ? 3 : 0;
+  return p + 9*Math.log10(1+s/100) + cond + direct; }
+function ago(iso){ const m=(Date.now()-new Date(iso).getTime())/60000, a=t().ago;
+  if(m<90) return `${Math.max(1,Math.round(m))} ${a.m}`; if(m<48*60) return `${Math.round(m/60)} ${a.h}`; return `${Math.round(m/1440)} ${a.d}`; }
+
+function applyText(){
+  const x=t(); document.documentElement.lang = lang==="no"?"nb":lang;
+  $("h1").textContent=x.h1; $("sub").textContent=x.sub; $("q").placeholder=x.search; $("searchLbl").textContent=x.search;
+  $("filterLbl").textContent=x.filters; $("lblCat").textContent=x.cat; $("lblSort").textContent=x.sort; $("lblMin").textContent=x.minDisc;
+  $("lblMax").textContent=x.maxPrice; $("lblCity").textContent=x.city; $("lblDirect").textContent=x.direct; $("lblWatch").textContent=x.watch;
+  $("fAbout").textContent=x.about; $("fAboutTxt").textContent=x.aboutTxt; $("fAff").textContent=x.aff; $("fSources").textContent=x.sources; $("moreBtn").textContent=x.more;
+  $("lang").innerHTML = Object.keys(T).map(k=>`<button data-l="${k}" aria-pressed="${k===lang}">${k.toUpperCase()}</button>`).join("");
+  const countries = ["", ...Object.keys(x.countries)];
+  $("countryChips").innerHTML = countries.map(c=>`<button class="chip" data-c="${c}" aria-pressed="${st.country===c}">${c?FLAG[c]+" "+x.countries[c]:x.all}</button>`).join("");
+  const conds = ["", ...new Set(DATA.map(d=>d.condition))];
+  $("condChips").innerHTML = conds.map(c=>`<button class="chip" data-k="${c}" aria-pressed="${st.cond===c}">${c?x.cond[c]||c:x.all}</button>`).join("");
+  const cats = [...new Set(DATA.map(d=>d.category))].sort((a,b)=>(x.cats[a]||a).localeCompare(x.cats[b]||b));
+  $("cat").innerHTML = `<option value="">${x.all}</option>` + cats.map(c=>`<option value="${c}" ${st.cat===c?"selected":""}>${x.cats[c]||c}</option>`).join("");
+  $("sort").innerHTML = ["score","disc","save","low","high","near"].map(s=>`<option value="${s}" ${st.sort===s?"selected":""}>${x["s_"+s]}</option>`).join("");
+  $("city").innerHTML = `<option value="">${x.nogeo}</option><option value="geo" ${st.city==="geo"?"selected":""}>📍 ${x.geo}</option>` + CITIES.map(c=>`<option value="${c[0]}" ${st.city===c[0]?"selected":""}>${FLAG[c[1]]} ${c[0]}</option>`).join("");
+  $("minDisc").value = st.minDisc; $("minDiscVal").textContent = st.minDisc ? st.minDisc+" %" : "0 %";
+  $("maxPrice").value = st.maxPrice; $("onlyDirect").checked = st.onlyDirect; $("onlyWatch").checked = st.onlyWatch;
+  renderSources();
+}
+
+function filtered(){
+  const terms = norm(st.q).split(/\s+/).filter(Boolean);
+  let out = DATA.filter(d => {
+    if(st.country && d.country!==st.country) return false;
+    if(st.cond && d.condition!==st.cond) return false;
+    if(st.cat && d.category!==st.cat) return false;
+    if(st.minDisc && (d.discount_pct||0) < st.minDisc) return false;
+    if(st.maxPrice && d.price > +st.maxPrice) return false;
+    if(st.onlyDirect && d.url_kind!=="product") return false;
+    if(st.onlyWatch && !watch.has(d.id)) return false;
+    if(terms.length){ const hay = d._hay || (d._hay = norm([d.title,d.brand,d.retailer,d.condition_text,t().cats[d.category]].join(" "))); if(!terms.every(w=>hay.includes(w))) return false; }
+    return true;
+  });
+  const dist = d => (here && d.lat!=null) ? km(here,d) : (here && d.country===here.country ? 5000 : 1e9);
+  const S = {score:(a,b)=>score(b)-score(a), disc:(a,b)=>(b.discount_pct||0)-(a.discount_pct||0), save:(a,b)=>savingSEK(b)-savingSEK(a),
+             low:(a,b)=>a.price*(FX_TO_SEK[a.currency]||1)-b.price*(FX_TO_SEK[b.currency]||1), high:(a,b)=>b.price*(FX_TO_SEK[b.currency]||1)-a.price*(FX_TO_SEK[a.currency]||1),
+             near:(a,b)=>dist(a)-dist(b)||score(b)-score(a)};
+  return out.sort(S[st.sort]||S.score);
+}
+
+function card(d){
+  const x=t(), cur=d.currency, ic = ICONS[d.category]||ICONS.other;
+  const thumb = d.image_url ? `<img loading="lazy" src="${esc(d.image_url)}" alt="" onerror="this.remove()">` : `<svg class="ico" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ic}</svg>`;
+  const save = d.regular_price ? `<span class="save">−${fmt(d.regular_price-d.price,cur)}</span>` : "";
+  let linkTxt = x.go, cls="go";
+  if(d.url_kind==="search"){ linkTxt = `${x.search_at} ${d.retailer}`; cls="go alt"; }
+  if(d.url_kind==="listing"){ linkTxt = x.listing; cls="go alt"; }
+  let where = d.store ? `${x.instore}: ${esc(d.store)}` : (d.delivery ? `${x.delivery} ${FLAG[d.country]}` : "");
+  if(here && d.lat!=null) where += ` · ${Math.round(km(here,d))} ${x.km}`;
+  return `<article class="card">
+    <div class="thumb">${thumb}${d.discount_pct?`<span class="pct">−${Math.round(d.discount_pct)}%</span>`:""}
+      <button class="star" data-w="${d.id}" aria-pressed="${watch.has(d.id)}" aria-label="${x.save}"><svg width="18" height="18" viewBox="0 0 24 24" fill="${watch.has(d.id)?"currentColor":"none"}" stroke="currentColor" stroke-width="2"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/></svg></button></div>
+    <div class="body">
+      <div class="meta"><span class="tag">${esc(d.retailer)}</span><span class="tag cond">${x.cond[d.condition]||d.condition}</span><span>${where}</span></div>
+      <h2 class="title" title="${esc(d.title)}">${esc(d.title)}</h2>
+      <div class="prices"><span class="now">${fmt(d.price,cur)}</span>${d.regular_price?`<span class="was">${fmt(d.regular_price,cur)}</span>`:""}${save}</div>
+      ${d.condition_text?`<div class="ctext">${esc(d.condition_text)}</div>`:""}
+      <div class="foot"><span class="age">${x.seen} ${ago(d.observed_at)}</span><a class="${cls}" href="${esc(d.link||d.url)}" target="_blank" rel="noopener sponsored">${esc(linkTxt)}</a></div>
+    </div></article>`;
+}
+
+function render(){
+  const list = filtered(), x=t();
+  $("grid").innerHTML = list.length ? list.slice(0,st.limit).map(card).join("") : `<div class="empty">${x.none}</div>`;
+  $("moreBtn").hidden = list.length <= st.limit;
+  const newest = DATA.reduce((m,d)=>d.observed_at>m?d.observed_at:m, "");
+  const stale = !META.live;
+  const when = newest ? new Date(newest).toLocaleString(LOCALE[lang],{dateStyle:"medium",timeStyle:"short"}) : "";
+  $("status").innerHTML = `<span><strong>${x.results(list.length)}</strong></span><span><span class="dot ${stale?"stale":""}"></span>${x.updated}: ${when}. ${stale?x.stale:x.live}</span>`;
+  store.set("filters", {country:st.country,cond:st.cond,cat:st.cat,sort:st.sort,minDisc:st.minDisc,maxPrice:st.maxPrice,city:st.city,onlyDirect:st.onlyDirect,onlyWatch:st.onlyWatch});
+}
+
+function renderSources(){
+  const bySrc = {}; DATA.forEach(d=>{ const k=d.retailer+"|"+d.country; bySrc[k]=(bySrc[k]||0)+1; });
+  const rows = Object.entries(bySrc).sort((a,b)=>b[1]-a[1]).map(([k,n])=>{ const [r,c]=k.split("|"); return `<div class="src"><span>${FLAG[c]} ${esc(r)}</span><span class="pill on">${n}</span></div>`; });
+  const pending = (META.sources||[]).filter(s=>!s.enabled && !/example/.test(s.id)).map(s=>`<div class="src"><span>${FLAG[s.country]||""} ${esc(s.retailer)}</span><span class="pill">${({sv:"väntar",en:"pending",da:"afventer",no:"venter"})[lang]}</span></div>`);
+  $("srcList").innerHTML = rows.join("") + pending.join("");
+}
+
+function setCity(v){
+  st.city=v; here=null;
+  if(v==="geo"){
+    try{ navigator.geolocation.getCurrentPosition(p=>{ const {latitude:lat,longitude:lon}=p.coords;
+        const near = CITIES.map(c=>({c,dd:km({lat,lon},{lat:c[2],lon:c[3]})})).sort((a,b)=>a.dd-b.dd)[0];
+        here={lat,lon,country:near.c[1]}; if(st.sort==="score") st.sort="near"; applyText(); render(); },
+      ()=>{ st.city=""; applyText(); render(); }, {timeout:8000}); }catch(e){ st.city=""; }
+  } else if(v){ const c=CITIES.find(c=>c[0]===v); if(c) here={lat:c[2],lon:c[3],country:c[1]}; }
+  render();
+}
+
+function bind(){
+  let tm; $("q").addEventListener("input", e=>{ clearTimeout(tm); tm=setTimeout(()=>{ st.q=e.target.value; st.limit=48; render(); }, 120); });
+  $("filterBtn").addEventListener("click", ()=>{ const o=$("filters").classList.toggle("open"); $("filterBtn").setAttribute("aria-expanded",o); });
+  $("lang").addEventListener("click", e=>{ const b=e.target.closest("button"); if(!b) return; lang=b.dataset.l; store.set("lang",lang); applyText(); render(); });
+  $("countryChips").addEventListener("click", e=>{ const b=e.target.closest("button"); if(!b) return; st.country=b.dataset.c; st.limit=48; applyText(); render(); });
+  $("condChips").addEventListener("click", e=>{ const b=e.target.closest("button"); if(!b) return; st.cond=b.dataset.k; st.limit=48; applyText(); render(); });
+  $("cat").addEventListener("change", e=>{ st.cat=e.target.value; render(); });
+  $("sort").addEventListener("change", e=>{ st.sort=e.target.value; render(); });
+  $("minDisc").addEventListener("input", e=>{ st.minDisc=+e.target.value; $("minDiscVal").textContent=st.minDisc+" %"; render(); });
+  $("maxPrice").addEventListener("input", e=>{ st.maxPrice=e.target.value; render(); });
+  $("city").addEventListener("change", e=>setCity(e.target.value));
+  $("onlyDirect").addEventListener("change", e=>{ st.onlyDirect=e.target.checked; render(); });
+  $("onlyWatch").addEventListener("change", e=>{ st.onlyWatch=e.target.checked; render(); });
+  $("moreBtn").addEventListener("click", ()=>{ st.limit+=48; render(); });
+  $("grid").addEventListener("click", e=>{ const b=e.target.closest(".star"); if(!b) return; const id=b.dataset.w;
+    watch.has(id)?watch.delete(id):watch.add(id); store.set("watch",[...watch]); render(); });
+}
+
+async function load(){
+  if(window.__FR_DATA__){ DATA=window.__FR_DATA__.listings; META=window.__FR_DATA__.meta||{}; }
+  else {
+    try{
+      const [l,m] = await Promise.all([fetch("data/listings.json",{cache:"no-cache"}).then(r=>r.json()), fetch("data/meta.json",{cache:"no-cache"}).then(r=>r.json()).catch(()=>({}))]);
+      DATA=l; META=m;
+    }catch(e){ DATA=[]; }
+  }
+  META.live = (META.health||[]).some(h=>h.ok && h.source!=="snapshot");
+  applyText(); bind(); if(st.city && st.city!=="geo") setCity(st.city); else render();
+}
+load();
+})();
+</script>
+</body>
+</html>
